@@ -11,10 +11,10 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 ### Features
 
 - Costume section in the decoration panel with one-click switching
-- Three request modes:
-  - **"Just this once~"** - Session only
-  - **"Just today~"** - Saved for today
-  - **"Forever?!"** - Auto-applied on every launch
+- Three costume request modes:
+  - Session only (not saved)
+  - Saved for today
+  - Auto-applied on every launch
 - Trilingual UI: English, 中文, 日本語
 
 ### Installation
@@ -35,9 +35,9 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 
 - 装饰面板中新增服装栏目，一键切换
 - 三种换装请求模式：
-  - **"只这一次哦~"** - 仅本次会话
-  - **"只有今天哦~"** - 保存到当日记录
-  - **"一辈子？！"** - 每次启动自动应用
+  - 仅本次会话（不保存）
+  - 保存到当日记录
+  - 每次启动自动应用
 - 界面支持三语：English、中文、日本語
 
 ### 安装
@@ -57,10 +57,10 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 ### 機能
 
 - 装飾パネルにコスチュームセクション追加、ワンクリック切替
-- 3つのリクエストモード：
-  - **「今回だけね~」** - 本次のみ
-  - **「今日だけね~」** - 今日の記録に保存
-  - **「一生？！」** - 毎回起動時に自動適用
+- 3つのコスチュームリクエストモード：
+  - 本次のみ（保存しない）
+  - 今日の記録に保存
+  - 毎回起動時に自動適用
 - 3か国語UI：English、中文、日本語
 
 ### インストール
