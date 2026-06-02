@@ -29,7 +29,7 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 
 ## 中文
 
-为 **Chill with You: Lo-Fi Story** 的"转转你的"装饰面板添加服装切换功能的 BepInEx Mod。
+为 **Chill with You: Lo-Fi Story** 的"转换心情"装饰面板添加服装切换功能的 BepInEx Mod。
 
 ### 功能
 
@@ -52,7 +52,7 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 
 ## 日本語
 
-**Chill with You: Lo-Fi Story** の「転々あなたの」装飾パネルにコスチューム切替機能を追加する BepInEx Mod です。
+**Chill with You: Lo-Fi Story** の「気分転換」装飾パネルにコスチューム切替機能を追加する BepInEx Mod です。
 
 ### 機能
 
