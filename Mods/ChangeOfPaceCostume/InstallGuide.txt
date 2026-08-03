@@ -1,6 +1,6 @@
 ========================================
   Chill with You: Lo-Fi Story
-  Change of Pace - Costume Mod v1.6.0
+  Change of Pace - Costume Mod v1.6.1
 ========================================
 
 【功能简介】
@@ -46,7 +46,7 @@ This mod adds two features to the "Change of Pace" decoration panel: costume swi
 
 正常加载时，日志中应能看到以下关键行：
 
-  [Change of Pace - Costume v1.6.0] loaded.
+  [Change of Pace - Costume v1.6.1] loaded.
   [Init] Unity 2022.3.x | BepInEx 5.4.x
   [Init] Harmony patches applied: 8 method(s).
   [Patch] DecorationListUI.Setup triggered.
@@ -72,7 +72,7 @@ If the mod features do not appear in-game, follow these steps to get the log:
 
 A healthy log contains these key lines:
 
-  [Change of Pace - Costume v1.6.0] loaded.
+  [Change of Pace - Costume v1.6.1] loaded.
   [Init] Unity 2022.3.x | BepInEx 5.4.x
   [Init] Harmony patches applied: 8 method(s).
   [Patch] DecorationListUI.Setup triggered.
@@ -111,4 +111,4 @@ Q: Why do my cat-ear headphones disappear when wearing a hat? A: By design — h
 Q: Can I wear the Christmas hat and the beret at the same time? A: No. They share the same slot and are mutually exclusive — enabling one automatically disables the other.
 
 ----------------------------------------
-Mod Version: 1.6.0 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story
+Mod Version: 1.6.1 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story

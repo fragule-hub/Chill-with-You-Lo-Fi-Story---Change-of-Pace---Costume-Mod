@@ -316,23 +316,34 @@ internal static class CostumeButtonsInjector
 
         _costumeService.ChangeCostume(skinType).Forget();
 
-        // Option 1: session-only, clear permanent
-        // Option 2: save today, clear permanent
-        // Option 3: save permanent + today
-        if (_selectedRequestOption != OptionForever)
+        ApplyRequestOption(_selectedRequestOption, skinType);
+
+        UpdateActiveHighlights(skinType);
+    }
+
+    // Apply the selected request strategy to a costume.
+    // Called both when a costume is clicked and when the strategy is switched,
+    // so switching to "One day" / "Forever" saves / applies the currently worn
+    // costume immediately (no need to click another costume first).
+    private static void ApplyRequestOption(int optionIndex, CostumeChangeService.CostumeSkinType skinType)
+    {
+        // Forever: set permanent + save to today's record
+        // Today: save to today's record, cancel any permanent costume
+        // Once (or deselected): session only — no saves, cancel any permanent costume
+        if (optionIndex == OptionForever)
+        {
+            ModSaveData.SetPermanentSkin(skinType);
+            SaveTodayCostume(skinType);
+        }
+        else if (optionIndex == OptionToday)
+        {
+            ModSaveData.ClearPermanentSkin();
+            SaveTodayCostume(skinType);
+        }
+        else
         {
             ModSaveData.ClearPermanentSkin();
         }
-        if (_selectedRequestOption != OptionOnce)
-        {
-            SaveTodayCostume(skinType);
-        }
-        if (_selectedRequestOption == OptionForever)
-        {
-            ModSaveData.SetPermanentSkin(skinType);
-        }
-
-        UpdateActiveHighlights(skinType);
     }
 
     private static void SaveTodayCostume(CostumeChangeService.CostumeSkinType skinType)
@@ -381,6 +392,10 @@ internal static class CostumeButtonsInjector
             _selectedRequestOption = optionIndex;
         }
         UpdateRequestOptionHighlights();
+
+        // Apply the new strategy to the currently worn costume immediately
+        // (saves today's record / sets permanent without clicking another costume).
+        ApplyRequestOption(_selectedRequestOption, GetCurrentSkinType());
     }
 
     private static void UpdateRequestOptionHighlights()

@@ -12,7 +12,7 @@ public class Plugin : BaseUnityPlugin
 {
     private const string PluginGuid = "com.chillwithyou.changeofpacecostume";
     private const string PluginName = "Change of Pace - Costume";
-    private const string PluginVersion = "1.6.0";
+    private const string PluginVersion = "1.6.1";
 
     internal static ManualLogSource Log;
 
