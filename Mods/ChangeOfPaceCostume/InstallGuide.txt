@@ -1,0 +1,114 @@
+========================================
+  Chill with You: Lo-Fi Story
+  Change of Pace - Costume Mod v1.6.0
+========================================
+
+【功能简介】
+
+本 Mod 为游戏的"转换心情"（Change of Pace）装饰面板新增两类功能：一是服装切换，可以直接更换角色服装，并可选择"一次 / 一日 / 一生"三种请求模式；二是限定装饰常驻，魔法公主贝雷帽、圣诞帽、愚人节墨镜可以随时装备，并且每次启动游戏、剧情结束后都会自动保持。戴上头部装饰（贝雷帽 / 圣诞帽）时会自动临时替换猫耳耳机；贝雷帽与圣诞帽属于同一部位、互相排斥，同时只能佩戴一顶。
+
+This mod adds two features to the "Change of Pace" decoration panel: costume switching with three request modes (Once / One day / Forever), and permanent limited decorations (Magical Princess beret, Christmas hat, April Fools sunglasses) that are kept automatically on launch and after stories. Headwear (beret / Christmas hat) temporarily replaces cat-ear headphones; the beret and the Christmas hat are mutually exclusive — only one can be worn at a time.
+
+----------------------------------------
+【安装方式 A：首次安装（未安装过 BepInEx）】
+
+1. 下载完整包 ChangeOfPaceCostume_Full_v1.6.zip，此包内含 BepInEx 框架，无需其他前置。
+2. 将压缩包内的全部内容解压到游戏根目录（与 Chill With You.exe 同级）。
+3. 启动游戏即可使用。
+
+[Install A: First time (no BepInEx installed)]
+
+1. Download the FULL package ChangeOfPaceCostume_Full_v1.6.zip (bundles the BepInEx framework, no extra prerequisites).
+2. Extract the whole archive into the game folder (same level as Chill With You.exe).
+3. Launch the game.
+
+----------------------------------------
+【安装方式 B：已安装过 BepInEx，或从旧版 Mod 升级】
+
+1. 下载仅含 Mod 文件的包 ChangeOfPaceCostume.zip（不含 BepInEx）。
+2. 解压后，将 ChangeOfPaceCostume.dll 放入游戏目录的 BepInEx\plugins\ 文件夹，覆盖旧文件。
+3. 启动游戏即可；原有的 Mod 设置（服装 / 装饰开关）会自动沿用，无需重新配置。
+
+[Install B: BepInEx already installed, or upgrading from an older version]
+
+1. Download the mod-only package ChangeOfPaceCostume.zip (does not include BepInEx).
+2. Extract it and copy ChangeOfPaceCostume.dll into BepInEx\plugins\ in the game folder, overwriting the old file.
+3. Launch the game; your previous settings (costumes / decoration toggles) are kept automatically.
+
+----------------------------------------
+【日志与故障诊断】
+
+如果安装后游戏内没有出现 Mod 功能，请按以下步骤获取日志：
+
+1. 日志文件位置：游戏目录\BepInEx\LogOutput.log。
+2. 请先正常关闭游戏（不要直接结束进程），再用记事本打开该文件；也可以直接把整个文件发送给作者。
+3. 在日志中搜索 "Change of Pace - Costume"，将包含该关键词的整段日志复制给作者即可。
+
+正常加载时，日志中应能看到以下关键行：
+
+  [Change of Pace - Costume v1.6.0] loaded.
+  [Init] Unity 2022.3.x | BepInEx 5.4.x
+  [Init] Harmony patches applied: 8 method(s).
+  [Patch] DecorationListUI.Setup triggered.
+  [Patch] _scrollRect OK: 'DecorationScrollView' (content: 'Content')
+  [Inject] Enter: scrollRect='...' content='...'
+  [Inject] Complete: skins=5, options=3, decor=3, ...
+  [Patch] DecorationListUI.Activate triggered.
+
+根据日志可以快速定位问题：
+
+  · 没有 "[Init] Harmony patches applied" —— 补丁挂载失败，多半是游戏更新导致，请把日志发给作者。
+  · 有补丁日志但看不到 "[Patch] DecorationListUI.Setup triggered" —— 装饰面板的初始化没有被触发。
+  · 出现 "[Inject] FAILED" 或 "[Patch] '_scrollRect' not found" —— 请把 ERROR 行及其前后的几行日志发给作者。
+  · 能看到 "Complete" 但面板里依然没有 Mod 区域 —— 请一并描述游戏内看到的现象。
+
+[Logs & Troubleshooting]
+
+If the mod features do not appear in-game, follow these steps to get the log:
+
+1. Log file location: <game folder>\BepInEx\LogOutput.log.
+2. Close the game normally (do not force-kill it), then open the file with Notepad; you may also send the whole file to the author.
+3. Search the log for "Change of Pace - Costume" and send the block of lines containing that keyword.
+
+A healthy log contains these key lines:
+
+  [Change of Pace - Costume v1.6.0] loaded.
+  [Init] Unity 2022.3.x | BepInEx 5.4.x
+  [Init] Harmony patches applied: 8 method(s).
+  [Patch] DecorationListUI.Setup triggered.
+  [Patch] _scrollRect OK: 'DecorationScrollView' (content: 'Content')
+  [Inject] Enter: scrollRect='...' content='...'
+  [Inject] Complete: skins=5, options=3, decor=3, ...
+  [Patch] DecorationListUI.Activate triggered.
+
+Quick triage from the log:
+
+  · No "[Init] Harmony patches applied" — patch binding failed, most likely due to a game update; send the log to the author.
+  · Patches present but no "[Patch] DecorationListUI.Setup triggered" — the decoration panel setup was never invoked.
+  · "[Inject] FAILED" or "[Patch] '_scrollRect' not found" — send the ERROR line(s) and surrounding lines to the author.
+  · "Complete" appears but the mod area is still missing in the panel — describe what you see in-game as well.
+
+----------------------------------------
+【卸载】
+
+删除 游戏目录\BepInEx\plugins\ChangeOfPaceCostume.dll 即可。若不再使用任何 Mod，可一并删除 BepInEx 文件夹、winhttp.dll、doorstop_config.ini。
+
+[Uninstall]
+
+Delete ChangeOfPaceCostume.dll from BepInEx\plugins\ in the game folder. If no other mods are used, you may also delete the BepInEx folder, winhttp.dll and doorstop_config.ini.
+
+----------------------------------------
+【常见问题】
+
+问：升级 Mod 版本后，之前的设置会丢失吗？答：不会。Mod 设置保存在注册表（HKCU\Software\Nestopi\Chill With You），与游戏主存档完全独立。
+问：戴上帽子后猫耳耳机消失了？答：这是正常设计——头部装饰会临时替换猫耳耳机，摘帽后不会自动戴回。
+问：圣诞帽和贝雷帽可以同时戴吗？答：不可以。两者属于同一部位、互相排斥，开启其中一个会自动关闭另一个。
+
+[FAQ]
+
+Q: Will my settings survive a mod update? A: Yes. Mod settings are stored in the registry (HKCU\Software\Nestopi\Chill With You), fully independent of the game save.
+Q: Why do my cat-ear headphones disappear when wearing a hat? A: By design — headwear temporarily replaces them, and they do not return automatically after removal.
+Q: Can I wear the Christmas hat and the beret at the same time? A: No. They share the same slot and are mutually exclusive — enabling one automatically disables the other.
+
+----------------------------------------
+Mod Version: 1.6.0 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story

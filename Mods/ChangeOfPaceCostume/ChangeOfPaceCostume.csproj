@@ -36,12 +36,16 @@
       <HintPath>$(ManagedDir)\UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(ManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(ManagedDir)\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>$(ManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(ManagedDir)\Unity.TextMeshPro.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
