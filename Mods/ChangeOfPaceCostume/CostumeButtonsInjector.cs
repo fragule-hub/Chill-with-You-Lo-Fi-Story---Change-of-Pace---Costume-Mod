@@ -42,6 +42,10 @@ internal static class CostumeButtonsInjector
     // ── unified limited decorations (hats + events) ──
     private static Dictionary<string, Image> _decorButtonImages;
 
+    // ── hair (today-only, enum-discovered) ──
+    private static Dictionary<string, Image> _hairButtonImages;
+    private static GameObject _hairLockedHint;
+
     // ── colors ──
     private static readonly Color ActiveColor = new Color(0.35f, 0.65f, 1f, 1f);
     private static readonly Color NormalColor = new Color(0.8f, 0.8f, 0.8f, 1f);
@@ -51,6 +55,12 @@ internal static class CostumeButtonsInjector
     // ── localization ──
     private static readonly Dictionary<string, Dictionary<GameLanguageType, string>> LocalizedTexts = new Dictionary<string, Dictionary<GameLanguageType, string>>
     {
+        ["costume_title"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "衣装",
+            [GameLanguageType.English] = "Costume",
+            [GameLanguageType.ChineseSimplified] = "服装",
+        },
         ["costume_request_title"] = new Dictionary<GameLanguageType, string>
         {
             [GameLanguageType.Japanese] = "衣装リクエスト",
@@ -105,6 +115,42 @@ internal static class CostumeButtonsInjector
             [GameLanguageType.English] = "Headwear temporarily replaces cat-ear headphones",
             [GameLanguageType.ChineseSimplified] = "头部装饰会临时替换猫耳耳机",
         },
+        ["hair_title"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "髪型",
+            [GameLanguageType.English] = "Hairstyle",
+            [GameLanguageType.ChineseSimplified] = "发型",
+        },
+        ["hair_Normal"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "通常",
+            [GameLanguageType.English] = "Normal",
+            [GameLanguageType.ChineseSimplified] = "通常发型",
+        },
+        ["hair_HairPin_A"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "ヘアピンA",
+            [GameLanguageType.English] = "Pin A",
+            [GameLanguageType.ChineseSimplified] = "发夹A",
+        },
+        ["hair_HairPin_B"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "ヘアピンB",
+            [GameLanguageType.English] = "Pin B",
+            [GameLanguageType.ChineseSimplified] = "发夹B",
+        },
+        ["hair_HairPin_C"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "ヘアピンC",
+            [GameLanguageType.English] = "Pin C",
+            [GameLanguageType.ChineseSimplified] = "发夹C",
+        },
+        ["hair_locked_hint"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "ベレー帽装着中は髪型を変更できません",
+            [GameLanguageType.English] = "Hair cannot be changed while the beret is worn",
+            [GameLanguageType.ChineseSimplified] = "装有贝雷帽时无法修改发型",
+        },
     };
 
     // ══════════════════════════════════════════════
@@ -117,6 +163,9 @@ internal static class CostumeButtonsInjector
         if (_injected && _costumeSection == null)
         {
             _injected = false;
+            _localizedTexts.Clear();
+            _languageSubscription?.Dispose();
+            _languageSubscription = null;
             Plugin.Log.LogInfo("[Inject] Costume section was destroyed; re-injecting.");
         }
         if (_injected) return;
@@ -171,10 +220,8 @@ internal static class CostumeButtonsInjector
             sectionCSF.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             sectionCSF.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            // Title
-            CreateTmpText(_costumeSection.transform, "Costume", 18);
+            CreateTmpText(_costumeSection.transform, GetLocalizedText("costume_title"), 18, "costume_title");
 
-            // Skin buttons
             _buttonImages = new Dictionary<CostumeChangeService.CostumeSkinType, Image>();
             foreach (var skin in _allSkins)
             {
@@ -183,34 +230,22 @@ internal static class CostumeButtonsInjector
                 btn.onClick.AddListener(() => OnSkinButtonClicked(capturedSkin));
             }
 
-            // ── Request Options Section ──
             CreateTmpText(_costumeSection.transform, GetLocalizedText("costume_request_title"), 16, "costume_request_title");
 
-            var hGroup = new GameObject("RequestOptionsRow");
-            hGroup.transform.SetParent(_costumeSection.transform, false);
-            var hGroupRT = hGroup.AddComponent<RectTransform>();
-            hGroupRT.anchorMin = new Vector2(0, 1);
-            hGroupRT.anchorMax = new Vector2(1, 1);
-            hGroupRT.pivot = new Vector2(0.5f, 1);
-            hGroupRT.sizeDelta = new Vector2(0, 30);
-            var hGroupVLG = hGroup.AddComponent<HorizontalLayoutGroup>();
-            hGroupVLG.childForceExpandWidth = true;
-            hGroupVLG.childForceExpandHeight = false;
-            hGroupVLG.childControlWidth = true;
-            hGroupVLG.childControlHeight = true;
-            hGroupVLG.spacing = 6f;
-            hGroupVLG.childAlignment = TextAnchor.MiddleCenter;
-
+            var requestRow = CreateHorizontalRow(_costumeSection.transform, "RequestOptionsRow", 30f);
             _requestOptionImages = new Dictionary<int, Image>();
             string[] optionKeys = { "option_once", "option_today", "option_forever" };
             for (int i = 0; i < 3; i++)
             {
-                var btn = CreateOptionButton(hGroup.transform, GetLocalizedText(optionKeys[i]), optionKeys[i]);
+                var btn = CreateOptionButton(requestRow, GetLocalizedText(optionKeys[i]), optionKeys[i]);
                 var img = btn.GetComponent<Image>();
                 _requestOptionImages[i] = img;
                 var capturedIndex = i;
                 btn.onClick.AddListener(() => OnRequestOptionClicked(capturedIndex));
             }
+
+            // ── Hair Section: enum-discovered, today-only (no Once/Forever row) ──
+            InjectHairSection(_costumeSection.transform);
 
             // ── Limited Decorations Section: one unified toggle per entry ──
             // Entries come from LimitedDecorationController (hat enum + discovered events),
@@ -225,7 +260,7 @@ internal static class CostumeButtonsInjector
                 {
                     // Display name: localized if known, otherwise the internal id (enum name)
                     var key = "limited_decor_" + entry.Key;
-                    var displayName = GetLocalizedText(key);
+                    var displayName = GetLocalizedTextOrFallback(key, entry.Key);
                     var btn = CreateOptionButton(_costumeSection.transform, displayName, key);
                     _decorButtonImages[entry.Key] = btn.GetComponent<Image>();
                     var capturedKey = entry.Key;
@@ -244,10 +279,17 @@ internal static class CostumeButtonsInjector
 
             Plugin.Log.LogInfo(
                 $"[Inject] Complete: skins={_buttonImages.Count}, options={_requestOptionImages.Count}, " +
-                $"decor={(_decorButtonImages?.Count ?? 0)}, section='{_costumeSection.name}' (inactive until panel opens).");
+                $"hair={(_hairButtonImages?.Count ?? 0)}, decor={(_decorButtonImages?.Count ?? 0)}, " +
+                $"section='{_costumeSection.name}' (inactive until panel opens).");
         }
         catch (Exception ex)
         {
+            if (_costumeSection != null)
+            {
+                UnityEngine.Object.Destroy(_costumeSection);
+                _costumeSection = null;
+            }
+            _injected = false;
             Plugin.Log.LogError($"[Inject] FAILED: {ex}");
         }
     }
@@ -280,6 +322,7 @@ internal static class CostumeButtonsInjector
             UpdateActiveHighlights();
             RestoreRequestOptionState();
 
+            UpdateHairHighlights();
             UpdateDecorHighlights();
         }
         catch (Exception ex)
@@ -436,6 +479,13 @@ internal static class CostumeButtonsInjector
             Plugin.Log.LogWarning($"[Localization] Failed to resolve language: {ex.Message}");
         }
         return key;
+    }
+
+    /// <summary>Unknown keys (new game enum values) show the fallback, not the raw key.</summary>
+    private static string GetLocalizedTextOrFallback(string key, string fallback)
+    {
+        if (!LocalizedTexts.ContainsKey(key)) return fallback;
+        return GetLocalizedText(key);
     }
 
     // ── game-native font: apply language font asset + material (mirrors TextLocalizationBehaviour.FontSet) ──
@@ -598,7 +648,7 @@ internal static class CostumeButtonsInjector
         return btn;
     }
 
-    private static void CreateTmpText(Transform parent, string content, int fontSize, string localizeKey = null)
+    private static TextMeshProUGUI CreateTmpText(Transform parent, string content, int fontSize, string localizeKey = null)
     {
         var go = new GameObject("Title");
         go.transform.SetParent(parent, false);
@@ -616,6 +666,98 @@ internal static class CostumeButtonsInjector
         ApplyTmpFont(text);
 
         if (localizeKey != null) RegisterLocalizedText(text, localizeKey);
+        return text;
+    }
+
+    // ── hair ──
+
+    private const int HairButtonsPerRow = 4;
+
+    private static void InjectHairSection(Transform parent)
+    {
+        var hairEntries = HairController.GetAllEntries();
+        if (hairEntries.Count == 0)
+        {
+            Plugin.Log.LogWarning("[Inject] No hairstyles found; skipping hair section.");
+            return;
+        }
+
+        CreateTmpText(parent, GetLocalizedText("hair_title"), 16, "hair_title");
+
+        _hairButtonImages = new Dictionary<string, Image>();
+        for (int i = 0; i < hairEntries.Count; i += HairButtonsPerRow)
+        {
+            int count = Math.Min(HairButtonsPerRow, hairEntries.Count - i);
+            var row = CreateHorizontalRow(parent, $"HairRow_{i / HairButtonsPerRow}", 34f);
+            for (int j = 0; j < count; j++)
+            {
+                var entry = hairEntries[i + j];
+                var label = GetLocalizedTextOrFallback(entry.LocalizeKey, entry.FallbackLabel);
+                var btn = CreateTmpButton(row, $"Hair_{entry.Key}", 34f, 13, label,
+                    flexibleWidth: true, NormalColor, ActiveColor, new Color(0.5f, 0.5f, 0.5f, 1f));
+                var labelTmp = btn.transform.Find("Label")?.GetComponent<TextMeshProUGUI>();
+                if (labelTmp != null && LocalizedTexts.ContainsKey(entry.LocalizeKey))
+                {
+                    RegisterLocalizedText(labelTmp, entry.LocalizeKey);
+                }
+                _hairButtonImages[entry.Key] = btn.GetComponent<Image>();
+                var capturedKey = entry.Key;
+                btn.onClick.AddListener(() => OnHairButtonClicked(capturedKey));
+            }
+        }
+
+        var lockedTmp = CreateTmpText(parent, GetLocalizedText("hair_locked_hint"), 12, "hair_locked_hint");
+        _hairLockedHint = lockedTmp.gameObject;
+        _hairLockedHint.SetActive(false);
+    }
+
+    private static Transform CreateHorizontalRow(Transform parent, string name, float height)
+    {
+        var hGroup = new GameObject(name);
+        hGroup.transform.SetParent(parent, false);
+        var hGroupRT = hGroup.AddComponent<RectTransform>();
+        hGroupRT.anchorMin = new Vector2(0, 1);
+        hGroupRT.anchorMax = new Vector2(1, 1);
+        hGroupRT.pivot = new Vector2(0.5f, 1);
+        hGroupRT.sizeDelta = new Vector2(0, height);
+        var hlg = hGroup.AddComponent<HorizontalLayoutGroup>();
+        hlg.childForceExpandWidth = true;
+        hlg.childForceExpandHeight = false;
+        hlg.childControlWidth = true;
+        hlg.childControlHeight = true;
+        hlg.spacing = 6f;
+        hlg.childAlignment = TextAnchor.MiddleCenter;
+        var le = hGroup.AddComponent<LayoutElement>();
+        le.preferredHeight = height;
+        le.minHeight = height;
+        return hGroup.transform;
+    }
+
+    private static void OnHairButtonClicked(string key)
+    {
+        HairController.Select(key);
+        UpdateHairHighlights();
+    }
+
+    private static void UpdateHairHighlights()
+    {
+        if (_hairButtonImages == null) return;
+        string shown = HairController.GetShownKey();
+        string wanted = HairController.GetWantedKey();
+        bool suppressed = HairController.IsSuppressedByHeadwear();
+        foreach (var kvp in _hairButtonImages)
+        {
+            if (kvp.Key == shown)
+                kvp.Value.color = ActiveColor;
+            else if (suppressed && kvp.Key == wanted)
+                kvp.Value.color = OptionSelectedColor;
+            else
+                kvp.Value.color = NormalColor;
+        }
+        if (_hairLockedHint != null)
+        {
+            _hairLockedHint.SetActive(suppressed);
+        }
     }
 
     //  ── unified limited decorations ──
@@ -624,6 +766,7 @@ internal static class CostumeButtonsInjector
     {
         LimitedDecorationController.Toggle(key);
         UpdateDecorHighlights();
+        UpdateHairHighlights();
     }
 
     private static void UpdateDecorHighlights()

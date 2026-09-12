@@ -1,3 +1,4 @@
+using System;
 using Bulbul;
 using HarmonyLib;
 using UnityEngine.UI;
@@ -56,6 +57,36 @@ internal static class DecorationPatches
         return true;
     }
 
+    // Same-day hair restore, including for players who have not yet met the
+    // pomodoro unlock. Vanilla TodayChangeHair ForceNormals (and overwrites
+    // the save) when unlocked time is too low. Episode 32 is left to the game.
+    [HarmonyPatch(typeof(ChangeHairService), nameof(ChangeHairService.TodayChangeHair))]
+    [HarmonyPrefix]
+    private static bool ChangeHairService_TodayChangeHair_Prefix(ChangeHairService __instance)
+    {
+        try
+        {
+            if (HairController.IsEpisode32())
+            {
+                Plugin.Log.LogInfo("[TodayChangeHair] Episode 32 — leaving vanilla ForceNormal.");
+                return true;
+            }
+
+            var latest = SaveDataManager.Instance.HairLotteryData?.LatestChangeData;
+            if (latest == null) return true;
+            if (HairController.ShouldLotteryNewHair(latest.Changed, DateTime.Now)) return true;
+
+            Plugin.Log.LogInfo($"[TodayChangeHair] Restoring today's hair: {latest.Kind} {latest.PinKind}");
+            __instance.ChangeHairWithoutSave(latest);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.LogWarning($"[TodayChangeHair] Prefix failed, falling back to vanilla: {ex.Message}");
+            return true;
+        }
+    }
+
     // ── Limited decorations: re-apply after the game forces removal ──
     // We patch only the "system reset" entries (Setup / StoryTidying), NOT ChangeHat itself,
     // so in-story hat changes during the collab scenario keep working normally.
@@ -92,11 +123,17 @@ internal static class DecorationPatches
         ApplyAllDeferred();
     }
 
+    // Hat Setup + Event Setup both fire during Initialize; keep only the last
+    // scheduled run so we do not ApplyAll four times on the same frame.
+    private static int _applySerial;
+
     private static void ApplyAllDeferred()
     {
+        int serial = ++_applySerial;
         UniTask.Void(async () =>
         {
             await UniTask.DelayFrame(1);
+            if (serial != _applySerial) return;
             LimitedDecorationController.ApplyAll();
         });
     }

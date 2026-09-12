@@ -82,7 +82,7 @@ internal static class LimitedDecorationController
                         Key = v.ToString(),
                         IsHat = true,
                         HatType = v,
-                        Rules = GetRules(v.ToString()),
+                        Rules = WithHatDefaults(GetRules(v.ToString())),
                     });
                 }
                 // Limited-time events: discovered from the scene
@@ -138,6 +138,20 @@ internal static class LimitedDecorationController
 
         ModSaveData.SetDecorEnabled(key, on);
         ApplyEntry(entry, on);
+        HairController.SyncVisualToHeadwear();
+    }
+
+    /// <summary>
+    /// True when a HatChangeService hat is on via a mod toggle.
+    /// Those hats lock hair to Normal. Christmas is not a HatType.
+    /// </summary>
+    public static bool HasHairLockingHatEnabled()
+    {
+        foreach (var e in GetAllEntries())
+        {
+            if (e.IsHat && IsEnabled(e.Key)) return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -162,6 +176,7 @@ internal static class LimitedDecorationController
             }
             ApplyEntry(e, true);
         }
+        HairController.SyncVisualToHeadwear();
     }
 
     private static DecorationEntry FindEntry(string key)
@@ -205,6 +220,18 @@ internal static class LimitedDecorationController
         return RulesTable.TryGetValue(key, out var r) ? r : new DecorRules();
     }
 
+    /// <summary>
+    /// Future HatType values inherit Head mutex + cat-ear swap even if they
+    /// are not listed in RulesTable. Explicit table entries still win on MutexGroup.
+    /// </summary>
+    private static DecorRules WithHatDefaults(DecorRules r)
+    {
+        if (r == null) r = new DecorRules();
+        if (string.IsNullOrEmpty(r.MutexGroup)) r.MutexGroup = "Head";
+        r.ReplaceHeadphones = true;
+        return r;
+    }
+
     private static string EventKeyOf(LimitedTimeEventBase evt)
     {
         try
@@ -226,21 +253,21 @@ internal static class LimitedDecorationController
         }
     }
 
-    private static void ReplaceHeadphones()
+    private static void EnsureDecorationService()
     {
         if (_decorationService == null)
-        {
             _decorationService = RoomLifetimeScope.Resolve<DecorationService>();
-        }
+    }
+
+    private static void ReplaceHeadphones()
+    {
+        EnsureDecorationService();
         _decorationService.ReplaceCatEarHeadphoneWithDefaultTemporarily();
     }
 
     private static void ReplaceGlassesToGrasses2()
     {
-        if (_decorationService == null)
-        {
-            _decorationService = RoomLifetimeScope.Resolve<DecorationService>();
-        }
+        EnsureDecorationService();
         _decorationService.ChangeDecoration(DecorationService.DecorationSkinType.Grasses_2, isSave: false);
     }
 }

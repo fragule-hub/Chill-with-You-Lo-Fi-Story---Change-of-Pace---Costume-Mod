@@ -1,24 +1,32 @@
 ========================================
   Chill with You: Lo-Fi Story
-  Change of Pace - Costume Mod v1.6.1
+  Change of Pace - Costume Mod v1.7.1
 ========================================
 
 【功能简介】
 
-本 Mod 为游戏的"转换心情"（Change of Pace）装饰面板新增两类功能：一是服装切换，可以直接更换角色服装，并可选择"一次 / 一日 / 一生"三种请求模式；二是限定装饰常驻，魔法公主贝雷帽、圣诞帽、愚人节墨镜可以随时装备，并且每次启动游戏、剧情结束后都会自动保持。戴上头部装饰（贝雷帽 / 圣诞帽）时会自动临时替换猫耳耳机；贝雷帽与圣诞帽属于同一部位、互相排斥，同时只能佩戴一顶。
+本 Mod 为游戏的"转换心情"（Change of Pace）装饰面板新增三类功能：
 
-This mod adds two features to the "Change of Pace" decoration panel: costume switching with three request modes (Once / One day / Forever), and permanent limited decorations (Magical Princess beret, Christmas hat, April Fools sunglasses) that are kept automatically on launch and after stories. Headwear (beret / Christmas hat) temporarily replaces cat-ear headphones; the beret and the Christmas hat are mutually exclusive — only one can be worn at a time.
+一、服装切换：可以直接更换角色服装，并可选择"一次 / 一日 / 一生"三种请求模式。
+二、发型切换：通常发型与发夹 A/B/C。发型设置后遵循游戏默认规则，一天内保持、每日轮换。（“贝雷帽”特殊发型，装有贝雷帽时无法修改发型。）
+三、限定装饰常驻：魔法公主贝雷帽、圣诞帽、愚人节墨镜可以随时装备且自动保持。戴上头部装饰（贝雷帽 / 圣诞帽）时会自动临时替换猫耳耳机；贝雷帽与圣诞帽属于同一部位、互相排斥，同时只能佩戴一顶。
+
+This mod adds three features to the "Change of Pace" decoration panel:
+
+1. Costume switching: change outfits directly, with three request modes (Once / One day / Forever).
+2. Hairstyle switching: Normal and hairpins A/B/C. After you set a style, it follows the game's default rules — kept for the day, rotated daily. (The beret is a special hair state: hair cannot be changed while the beret is worn.)
+3. Permanent limited decorations: Magical Princess beret, Christmas hat, and April Fools sunglasses can be equipped at any time and are kept automatically. Headwear (beret / Christmas hat) temporarily replaces cat-ear headphones; the beret and the Christmas hat share the same slot and are mutually exclusive.
 
 ----------------------------------------
 【安装方式 A：首次安装（未安装过 BepInEx）】
 
-1. 下载完整包 ChangeOfPaceCostume_Full_v1.6.zip，此包内含 BepInEx 框架，无需其他前置。
+1. 下载完整包 ChangeOfPaceCostume_Full_v1.7.1.zip，此包内含 BepInEx 框架，无需其他前置。
 2. 将压缩包内的全部内容解压到游戏根目录（与 Chill With You.exe 同级）。
 3. 启动游戏即可使用。
 
 [Install A: First time (no BepInEx installed)]
 
-1. Download the FULL package ChangeOfPaceCostume_Full_v1.6.zip (bundles the BepInEx framework, no extra prerequisites).
+1. Download the FULL package ChangeOfPaceCostume_Full_v1.7.1.zip (bundles the BepInEx framework, no extra prerequisites).
 2. Extract the whole archive into the game folder (same level as Chill With You.exe).
 3. Launch the game.
 
@@ -46,13 +54,13 @@ This mod adds two features to the "Change of Pace" decoration panel: costume swi
 
 正常加载时，日志中应能看到以下关键行：
 
-  [Change of Pace - Costume v1.6.1] loaded.
+  [Change of Pace - Costume v1.7.1] loaded.
   [Init] Unity 2022.3.x | BepInEx 5.4.x
-  [Init] Harmony patches applied: 8 method(s).
+  [Init] Harmony patches applied: 9 method(s).
   [Patch] DecorationListUI.Setup triggered.
   [Patch] _scrollRect OK: 'DecorationScrollView' (content: 'Content')
   [Inject] Enter: scrollRect='...' content='...'
-  [Inject] Complete: skins=5, options=3, decor=3, ...
+  [Inject] Complete: skins=5, options=3, hair=4, decor=3, ...
   [Patch] DecorationListUI.Activate triggered.
 
 根据日志可以快速定位问题：
@@ -72,13 +80,13 @@ If the mod features do not appear in-game, follow these steps to get the log:
 
 A healthy log contains these key lines:
 
-  [Change of Pace - Costume v1.6.1] loaded.
+  [Change of Pace - Costume v1.7.1] loaded.
   [Init] Unity 2022.3.x | BepInEx 5.4.x
-  [Init] Harmony patches applied: 8 method(s).
+  [Init] Harmony patches applied: 9 method(s).
   [Patch] DecorationListUI.Setup triggered.
   [Patch] _scrollRect OK: 'DecorationScrollView' (content: 'Content')
   [Inject] Enter: scrollRect='...' content='...'
-  [Inject] Complete: skins=5, options=3, decor=3, ...
+  [Inject] Complete: skins=5, options=3, hair=4, decor=3, ...
   [Patch] DecorationListUI.Activate triggered.
 
 Quick triage from the log:
@@ -100,15 +108,19 @@ Delete ChangeOfPaceCostume.dll from BepInEx\plugins\ in the game folder. If no o
 ----------------------------------------
 【常见问题】
 
-问：升级 Mod 版本后，之前的设置会丢失吗？答：不会。Mod 设置保存在注册表（HKCU\Software\Nestopi\Chill With You），与游戏主存档完全独立。
+问：升级 Mod 版本后，之前的设置会丢失吗？答：不会。Mod 设置保存在注册表（HKCU\Software\Nestopi\Chill With You），与游戏主存档完全独立。发型选择写在游戏自己的当日存档里，也会保留。
+问：发型会一直保持吗？答：遵循游戏默认规则，一天内保持、每日轮换。服装的"一生"不受影响。
+问：戴着贝雷帽为什么不能改发型？答：贝雷帽是特殊发型，戴着时无法修改发型。摘帽后可以再换。圣诞帽不限制发型。
 问：戴上帽子后猫耳耳机消失了？答：这是正常设计——头部装饰会临时替换猫耳耳机，摘帽后不会自动戴回。
 问：圣诞帽和贝雷帽可以同时戴吗？答：不可以。两者属于同一部位、互相排斥，开启其中一个会自动关闭另一个。
 
 [FAQ]
 
-Q: Will my settings survive a mod update? A: Yes. Mod settings are stored in the registry (HKCU\Software\Nestopi\Chill With You), fully independent of the game save.
+Q: Will my settings survive a mod update? A: Yes. Mod settings are stored in the registry (HKCU\Software\Nestopi\Chill With You), fully independent of the game save. Hairstyle choice is stored in the game's own daily hair save and is kept as well.
+Q: Does the hairstyle last forever? A: It follows the game's default rules: kept for the day, rotated daily. Costume "Forever" is unchanged.
+Q: Why can't I change hair while wearing the beret? A: The beret is a special hair state — hair cannot be changed while it is worn. You can change hair again after removing it. The Christmas hat does not restrict hairstyle.
 Q: Why do my cat-ear headphones disappear when wearing a hat? A: By design — headwear temporarily replaces them, and they do not return automatically after removal.
 Q: Can I wear the Christmas hat and the beret at the same time? A: No. They share the same slot and are mutually exclusive — enabling one automatically disables the other.
 
 ----------------------------------------
-Mod Version: 1.6.1 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story
+Mod Version: 1.7.1 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story

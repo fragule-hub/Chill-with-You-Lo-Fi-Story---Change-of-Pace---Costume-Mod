@@ -6,16 +6,15 @@
 
 ## English
 
-A BepInEx mod that adds costume switching to the "Change of Pace" decoration panel in **Chill with You: Lo-Fi Story**.
+A BepInEx mod that adds three features to the "Change of Pace" decoration panel in **Chill with You: Lo-Fi Story**.
 
 ### Features
 
-- Costume section in the decoration panel with one-click switching
-- Three costume request modes:
-  - Session only (not saved)
-  - Saved for today
-  - Auto-applied on every launch
-- Trilingual UI: English, 中文, 日本語
+1. **Costume switching** — change outfits directly, with three request modes (Once / One day / Forever).
+2. **Hairstyle switching** — Normal and hairpins A/B/C. After you set a style, it follows the game's default rules: kept for the day, rotated daily. (The beret is a special hair state: hair cannot be changed while the beret is worn.)
+3. **Permanent limited decorations** — Magical Princess beret, Christmas hat, and April Fools sunglasses can be equipped at any time and are kept automatically. Headwear (beret / Christmas hat) temporarily replaces cat-ear headphones; the beret and the Christmas hat share the same slot and are mutually exclusive.
+
+Trilingual UI: English, 中文, 日本語.
 
 ### Installation
 
@@ -29,16 +28,15 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 
 ## 中文
 
-为 **Chill with You: Lo-Fi Story** 的"转换心情"装饰面板添加服装切换功能的 BepInEx Mod。
+为 **Chill with You: Lo-Fi Story** 的「转换心情」装饰面板新增三类功能的 BepInEx Mod。
 
 ### 功能
 
-- 装饰面板中新增服装栏目，一键切换
-- 三种换装请求模式：
-  - 仅本次会话（不保存）
-  - 保存到当日记录
-  - 每次启动自动应用
-- 界面支持三语：English、中文、日本語
+1. **服装切换**：可以直接更换角色服装，并可选择「一次 / 一日 / 一生」三种请求模式。
+2. **发型切换**：通常发型与发夹 A/B/C。发型设置后遵循游戏默认规则，一天内保持、每日轮换。（「贝雷帽」特殊发型，装有贝雷帽时无法修改发型。）
+3. **限定装饰常驻**：魔法公主贝雷帽、圣诞帽、愚人节墨镜可以随时装备且自动保持。戴上头部装饰（贝雷帽 / 圣诞帽）时会自动临时替换猫耳耳机；贝雷帽与圣诞帽属于同一部位、互相排斥，同时只能佩戴一顶。
+
+界面支持三语：English、中文、日本語。
 
 ### 安装
 
@@ -52,16 +50,15 @@ A BepInEx mod that adds costume switching to the "Change of Pace" decoration pan
 
 ## 日本語
 
-**Chill with You: Lo-Fi Story** の「気分転換」装飾パネルにコスチューム切替機能を追加する BepInEx Mod です。
+**Chill with You: Lo-Fi Story** の「気分転換」装飾パネルに3つの機能を追加する BepInEx Mod です。
 
 ### 機能
 
-- 装飾パネルにコスチュームセクション追加、ワンクリック切替
-- 3つのコスチュームリクエストモード：
-  - 本次のみ（保存しない）
-  - 今日の記録に保存
-  - 毎回起動時に自動適用
-- 3か国語UI：English、中文、日本語
+1. **衣装切替**：ワンクリックで衣装を変更。3つのリクエストモード（一回 / 一日 / 一生）。
+2. **髪型切替**：通常ヘアとヘアピン A/B/C。設定後はゲームの既定ルールに従い、当日中は維持、毎日入れ替わります。（ベレー帽は特殊な髪型で、装着中は髪型を変更できません。）
+3. **限定装飾の常駐**：魔法少女ベレー帽、クリスマス帽、エイプリルフールのサングラスをいつでも装備でき、自動で維持されます。頭部装飾（ベレー帽 / クリスマス帽）装着時は猫耳ヘッドホンを一時的に入れ替えます。ベレー帽とクリスマス帽は同じ部位のため、同時には装着できません。
+
+3か国語UI：English、中文、日本語。
 
 ### インストール
 
