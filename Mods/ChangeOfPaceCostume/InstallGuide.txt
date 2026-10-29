@@ -1,100 +1,75 @@
 ========================================
   Chill with You: Lo-Fi Story
-  Change of Pace - Costume Mod v1.7.1
+  Change of Pace - Costume Mod v1.7.7
 ========================================
 
 【功能简介】
-
 本 Mod 为游戏的"转换心情"（Change of Pace）装饰面板新增三类功能：
 
 一、服装切换：可以直接更换角色服装，并可选择"一次 / 一日 / 一生"三种请求模式。
-二、发型切换：通常发型与发夹 A/B/C。发型设置后遵循游戏默认规则，一天内保持、每日轮换。（“贝雷帽”特殊发型，装有贝雷帽时无法修改发型。）
-三、限定装饰常驻：魔法公主贝雷帽、圣诞帽、愚人节墨镜可以随时装备且自动保持。戴上头部装饰（贝雷帽 / 圣诞帽）时会自动临时替换猫耳耳机；贝雷帽与圣诞帽属于同一部位、互相排斥，同时只能佩戴一顶。
+二、发型切换：通常发型与发夹 A/B/C。发型设置后遵循游戏默认规则，一天内保持、每日轮换。（贝雷帽遵循游戏默认：佩戴时固定通常发型并锁定切换；万圣节帽以及未来"只锁发型、没有专属发型"的头部装饰会解锁，可自由选择发夹。摘下有专属发型的装饰时，Mod 会把发型恢复为佩戴前的选择。）
+三、限定装饰常驻：魔法公主贝雷帽、万圣节帽子、圣诞帽、愚人节墨镜、万圣节 2026 等限定装饰可以随时装备且自动保持。戴上头部装饰时会自动临时替换猫耳耳机，取消头部装饰后会自动恢复你原本的耳机（包括猫耳耳机）；同部位装饰互相排斥，同时只能佩戴一个。
 
 This mod adds three features to the "Change of Pace" decoration panel:
 
 1. Costume switching: change outfits directly, with three request modes (Once / One day / Forever).
-2. Hairstyle switching: Normal and hairpins A/B/C. After you set a style, it follows the game's default rules — kept for the day, rotated daily. (The beret is a special hair state: hair cannot be changed while the beret is worn.)
-3. Permanent limited decorations: Magical Princess beret, Christmas hat, and April Fools sunglasses can be equipped at any time and are kept automatically. Headwear (beret / Christmas hat) temporarily replaces cat-ear headphones; the beret and the Christmas hat share the same slot and are mutually exclusive.
+2. Hairstyle switching: Normal and hairpins A/B/C. After you set a style, it follows the game's default rules - kept for the day, rotated daily. (The beret follows the game default: Normal hairstyle with switching locked. The Halloween hat - and future headwear without its own special style - is unlocked, so hairpins stay selectable. When a special-style headwear is removed, the mod restores the hairstyle you had before wearing it.)
+3. Permanent limited decorations: Magical Princess beret, Halloween hat, Christmas hat, April Fools sunglasses, Halloween 2026 and other limited decorations can be equipped at any time and are kept automatically. Headwear temporarily replaces cat-ear headphones and removing it restores your saved headphones (including cat ears); items in the same slot are mutually exclusive.
 
 ----------------------------------------
 【安装方式 A：首次安装（未安装过 BepInEx）】
 
-1. 下载完整包 ChangeOfPaceCostume_Full_v1.7.1.zip，此包内含 BepInEx 框架，无需其他前置。
+1. 下载完整包 ChangeOfPaceCostume_Full_v1.7.7.zip，此包内含 BepInEx 框架，无需其他前置。
 2. 将压缩包内的全部内容解压到游戏根目录（与 Chill With You.exe 同级）。
 3. 启动游戏即可使用。
 
 [Install A: First time (no BepInEx installed)]
 
-1. Download the FULL package ChangeOfPaceCostume_Full_v1.7.1.zip (bundles the BepInEx framework, no extra prerequisites).
+1. Download the FULL package ChangeOfPaceCostume_Full_v1.7.7.zip (bundles the BepInEx framework, no extra prerequisites).
 2. Extract the whole archive into the game folder (same level as Chill With You.exe).
 3. Launch the game.
 
 ----------------------------------------
-【安装方式 B：已安装过 BepInEx，或从旧版 Mod 升级】
+【安装方式 B：已安装 BepInEx，或从旧版 Mod 升级】
 
 1. 下载仅含 Mod 文件的包 ChangeOfPaceCostume.zip（不含 BepInEx）。
 2. 解压后，将 ChangeOfPaceCostume.dll 放入游戏目录的 BepInEx\plugins\ 文件夹，覆盖旧文件。
-3. 启动游戏即可；原有的 Mod 设置（服装 / 装饰开关）会自动沿用，无需重新配置。
+3. 启动游戏即可；原有的 Mod 设置（服装 / 发型 / 装饰开关）会自动沿用，无需重新配置。
 
 [Install B: BepInEx already installed, or upgrading from an older version]
 
 1. Download the mod-only package ChangeOfPaceCostume.zip (does not include BepInEx).
 2. Extract it and copy ChangeOfPaceCostume.dll into BepInEx\plugins\ in the game folder, overwriting the old file.
-3. Launch the game; your previous settings (costumes / decoration toggles) are kept automatically.
+3. Launch the game; your previous settings (costume / hairstyle / decoration toggles) are kept automatically.
 
 ----------------------------------------
 【日志与故障诊断】
 
-如果安装后游戏内没有出现 Mod 功能，请按以下步骤获取日志：
+如果安装后游戏内没有出现 Mod 功能：
 
-1. 日志文件位置：游戏目录\BepInEx\LogOutput.log。
-2. 请先正常关闭游戏（不要直接结束进程），再用记事本打开该文件；也可以直接把整个文件发送给作者。
-3. 在日志中搜索 "Change of Pace - Costume"，将包含该关键词的整段日志复制给作者即可。
+1. 确认 ChangeOfPaceCostume.dll 已放入 游戏目录\BepInEx\plugins\。
+2. 正常关闭游戏，用记事本打开 游戏目录\BepInEx\LogOutput.log。
+3. 搜索 "Change of Pace - Costume"，把包含该关键词的日志（或整个文件）发给作者。
 
-正常加载时，日志中应能看到以下关键行：
+正常加载时，日志中通常能看到：
 
-  [Change of Pace - Costume v1.7.1] loaded.
-  [Init] Unity 2022.3.x | BepInEx 5.4.x
-  [Init] Harmony patches applied: 9 method(s).
-  [Patch] DecorationListUI.Setup triggered.
-  [Patch] _scrollRect OK: 'DecorationScrollView' (content: 'Content')
-  [Inject] Enter: scrollRect='...' content='...'
-  [Inject] Complete: skins=5, options=3, hair=4, decor=3, ...
-  [Patch] DecorationListUI.Activate triggered.
-
-根据日志可以快速定位问题：
-
-  · 没有 "[Init] Harmony patches applied" —— 补丁挂载失败，多半是游戏更新导致，请把日志发给作者。
-  · 有补丁日志但看不到 "[Patch] DecorationListUI.Setup triggered" —— 装饰面板的初始化没有被触发。
-  · 出现 "[Inject] FAILED" 或 "[Patch] '_scrollRect' not found" —— 请把 ERROR 行及其前后的几行日志发给作者。
-  · 能看到 "Complete" 但面板里依然没有 Mod 区域 —— 请一并描述游戏内看到的现象。
+  [Change of Pace - Costume v1.7.7] loaded.
+  [Init] Harmony patches applied: 11 method(s).
+  [Inject] Complete: skins=..., options=3, hair=..., decor=...
 
 [Logs & Troubleshooting]
 
-If the mod features do not appear in-game, follow these steps to get the log:
+If the mod does not appear in game:
 
-1. Log file location: <game folder>\BepInEx\LogOutput.log.
-2. Close the game normally (do not force-kill it), then open the file with Notepad; you may also send the whole file to the author.
-3. Search the log for "Change of Pace - Costume" and send the block of lines containing that keyword.
+1. Make sure ChangeOfPaceCostume.dll is in <game folder>\BepInEx\plugins\.
+2. Close the game normally and open <game folder>\BepInEx\LogOutput.log with Notepad.
+3. Search for "Change of Pace - Costume" and send that part (or the whole file) to the author.
 
-A healthy log contains these key lines:
+A healthy log usually shows:
 
-  [Change of Pace - Costume v1.7.1] loaded.
-  [Init] Unity 2022.3.x | BepInEx 5.4.x
-  [Init] Harmony patches applied: 9 method(s).
-  [Patch] DecorationListUI.Setup triggered.
-  [Patch] _scrollRect OK: 'DecorationScrollView' (content: 'Content')
-  [Inject] Enter: scrollRect='...' content='...'
-  [Inject] Complete: skins=5, options=3, hair=4, decor=3, ...
-  [Patch] DecorationListUI.Activate triggered.
-
-Quick triage from the log:
-
-  · No "[Init] Harmony patches applied" — patch binding failed, most likely due to a game update; send the log to the author.
-  · Patches present but no "[Patch] DecorationListUI.Setup triggered" — the decoration panel setup was never invoked.
-  · "[Inject] FAILED" or "[Patch] '_scrollRect' not found" — send the ERROR line(s) and surrounding lines to the author.
-  · "Complete" appears but the mod area is still missing in the panel — describe what you see in-game as well.
+  [Change of Pace - Costume v1.7.7] loaded.
+  [Init] Harmony patches applied: 11 method(s).
+  [Inject] Complete: skins=..., options=3, hair=..., decor=...
 
 ----------------------------------------
 【卸载】
@@ -108,19 +83,49 @@ Delete ChangeOfPaceCostume.dll from BepInEx\plugins\ in the game folder. If no o
 ----------------------------------------
 【常见问题】
 
-问：升级 Mod 版本后，之前的设置会丢失吗？答：不会。Mod 设置保存在注册表（HKCU\Software\Nestopi\Chill With You），与游戏主存档完全独立。发型选择写在游戏自己的当日存档里，也会保留。
-问：发型会一直保持吗？答：遵循游戏默认规则，一天内保持、每日轮换。服装的"一生"不受影响。
-问：戴着贝雷帽为什么不能改发型？答：贝雷帽是特殊发型，戴着时无法修改发型。摘帽后可以再换。圣诞帽不限制发型。
-问：戴上帽子后猫耳耳机消失了？答：这是正常设计——头部装饰会临时替换猫耳耳机，摘帽后不会自动戴回。
-问：圣诞帽和贝雷帽可以同时戴吗？答：不可以。两者属于同一部位、互相排斥，开启其中一个会自动关闭另一个。
+问：升级 Mod 版本后，之前的设置会丢失吗？
+答：不会。Mod 设置保存在注册表（HKCU\Software\Nestopi\Chill With You），与游戏主存档完全独立。发型选择写在游戏自己的当日存档里，也会保留。
+
+问：发型会一直保持吗？
+答：遵循游戏默认规则，一天内保持、每日轮换。服装的"一生"不受影响。
+
+问：戴着帽子能改发型吗？
+答：贝雷帽遵循游戏默认：佩戴时固定通常发型、不能改；万圣节帽以及未来"没有专属发型"的头部装饰会解锁，可以自由切换通常 / 发夹。Mod 会记录戴帽前的发型，摘帽时恢复。
+
+问：戴上帽子后猫耳耳机消失了？
+答：这是正常设计——头部装饰会临时替换猫耳耳机。取消头部装饰后，Mod 会自动恢复你原本的耳机样式（包括猫耳耳机）。
+
+问：第 32 话（最终话）期间为什么装饰不见了？
+答：游戏本身在最终话前后会隐藏所有限时活动装饰、固定为通常发型。Mod 在这段期间保持静默、遵循游戏默认表现；读完后自动恢复正常。
+
+问：多顶帽子可以同时戴吗？
+答：不可以。同部位（头部）装饰互相排斥，开启其中一个会自动关闭另一个。
+
+问：万圣节帽和愚人节墨镜可以同时用吗？
+答：可以。单顶帽子只占"头部"位，愚人节墨镜属于"限时活动"位，两者不冲突。但万圣节 2026（附带帽子和其它装饰的活动）与愚人节墨镜互斥；同部位的头饰之间也仍然互斥。
 
 [FAQ]
 
-Q: Will my settings survive a mod update? A: Yes. Mod settings are stored in the registry (HKCU\Software\Nestopi\Chill With You), fully independent of the game save. Hairstyle choice is stored in the game's own daily hair save and is kept as well.
-Q: Does the hairstyle last forever? A: It follows the game's default rules: kept for the day, rotated daily. Costume "Forever" is unchanged.
-Q: Why can't I change hair while wearing the beret? A: The beret is a special hair state — hair cannot be changed while it is worn. You can change hair again after removing it. The Christmas hat does not restrict hairstyle.
-Q: Why do my cat-ear headphones disappear when wearing a hat? A: By design — headwear temporarily replaces them, and they do not return automatically after removal.
-Q: Can I wear the Christmas hat and the beret at the same time? A: No. They share the same slot and are mutually exclusive — enabling one automatically disables the other.
+Q: Will my settings survive a mod update?
+A: Yes. Mod settings are stored in the registry (HKCU\Software\Nestopi\Chill With You), fully independent of the game save. Hairstyle choice is stored in the game's own daily hair save and is kept as well.
+
+Q: Does the hairstyle last forever?
+A: It follows the game's default rules: kept for the day, rotated daily. Costume "Forever" is unchanged.
+
+Q: Can I change hair while wearing a hat?
+A: The beret follows the game default - Normal hairstyle, switching locked. The Halloween hat, and future headwear without its own special style, is unlocked so hairpins stay selectable. The mod records the hairstyle from before the hat and restores it when the hat is removed.
+
+Q: Why do my cat-ear headphones disappear when wearing a hat?
+A: By design - headwear temporarily replaces them. When you remove the headwear, the mod restores your saved headphone decoration (including cat ears).
+
+Q: Why are my decorations gone around main episode 32 (the finale)?
+A: The game itself hides all limited-time decorations and fixes the hairstyle around the finale. The mod stays silent there and follows the game's default presentation; normal behavior resumes once episode 32 has been read.
+
+Q: Can the Halloween hat and the April Fools sunglasses be used together?
+A: Yes. A single hat only occupies the "head" slot, while the April Fools sunglasses belong to the "limited-time event" slot. Halloween 2026 (the event that also adds a hat and props) is mutually exclusive with the April Fools sunglasses, and headwear in the same slot is still mutually exclusive.
+
+Q: Can I wear several hats at the same time?
+A: No. Decorations in the same slot (head) are mutually exclusive - enabling one automatically disables the other.
 
 ----------------------------------------
-Mod Version: 1.7.1 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story
+Mod Version: 1.7.7 | BepInEx: 5.4.23.5+ | Game: Chill with You: Lo-Fi Story

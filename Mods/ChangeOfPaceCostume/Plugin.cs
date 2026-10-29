@@ -12,7 +12,7 @@ public class Plugin : BaseUnityPlugin
 {
     private const string PluginGuid = "com.chillwithyou.changeofpacecostume";
     private const string PluginName = "Change of Pace - Costume";
-    private const string PluginVersion = "1.7.1";
+    private const string PluginVersion = "1.7.7";
 
     internal static ManualLogSource Log;
 
@@ -25,8 +25,14 @@ public class Plugin : BaseUnityPlugin
         // "loaded but no UI in game" issues can be pinpointed from the log alone.
         try
         {
-            Log.LogInfo($"[Init] Unity {Application.unityVersion} | BepInEx {typeof(BepInEx.BaseUnityPlugin).Assembly.GetName().Version}");
-            var harmony = Harmony.CreateAndPatchAll(typeof(DecorationPatches), PluginGuid);
+            Log.LogInfo($"[Init] Unity {Application.unityVersion} | BepInEx {typeof(BaseUnityPlugin).Assembly.GetName().Version}");
+
+            // Patches are registered one by one (see DecorationPatches.Apply).
+            // A single broken target only disables that feature instead of
+            // aborting every patch like Harmony's all-or-nothing PatchAll.
+            var harmony = new Harmony(PluginGuid);
+            DecorationPatches.Apply(harmony);
+
             var patched = harmony.GetPatchedMethods().ToList();
             Log.LogInfo($"[Init] Harmony patches applied: {patched.Count} method(s).");
             foreach (var m in patched)
@@ -36,7 +42,7 @@ public class Plugin : BaseUnityPlugin
         }
         catch (Exception ex)
         {
-            Log.LogError($"[Init] Harmony PatchAll FAILED (mod features will NOT work): {ex}");
+            Log.LogError($"[Init] Patch setup FAILED: {ex}");
         }
     }
 }

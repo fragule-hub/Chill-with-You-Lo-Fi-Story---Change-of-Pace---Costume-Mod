@@ -5,7 +5,6 @@ using Bulbul;
 using Cysharp.Threading.Tasks;
 using FastEnumUtility;
 using HarmonyLib;
-using NestopiSystem.DIContainers;
 using R3;
 using TMPro;
 using UnityEngine;
@@ -109,6 +108,18 @@ internal static class CostumeButtonsInjector
             [GameLanguageType.English] = "April Fools 2026",
             [GameLanguageType.ChineseSimplified] = "愚人节 2026",
         },
+        ["limited_decor_HalloweenHat"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "ハロウィンハット",
+            [GameLanguageType.English] = "Halloween Hat",
+            [GameLanguageType.ChineseSimplified] = "万圣节帽子",
+        },
+        ["limited_decor_Halloween2026"] = new Dictionary<GameLanguageType, string>
+        {
+            [GameLanguageType.Japanese] = "ハロウィン2026",
+            [GameLanguageType.English] = "Halloween 2026",
+            [GameLanguageType.ChineseSimplified] = "万圣节 2026",
+        },
         ["limited_hint"] = new Dictionary<GameLanguageType, string>
         {
             [GameLanguageType.Japanese] = "帽子系は猫耳ヘッドホンを一時的に交換します",
@@ -147,9 +158,9 @@ internal static class CostumeButtonsInjector
         },
         ["hair_locked_hint"] = new Dictionary<GameLanguageType, string>
         {
-            [GameLanguageType.Japanese] = "ベレー帽装着中は髪型を変更できません",
-            [GameLanguageType.English] = "Hair cannot be changed while the beret is worn",
-            [GameLanguageType.ChineseSimplified] = "装有贝雷帽时无法修改发型",
+            [GameLanguageType.Japanese] = "現在は髪型を変更できません",
+            [GameLanguageType.English] = "Hair cannot be changed right now",
+            [GameLanguageType.ChineseSimplified] = "当前状态下无法修改发型",
         },
     };
 
@@ -175,11 +186,11 @@ internal static class CostumeButtonsInjector
 
         try
         {
-            _costumeService = RoomLifetimeScope.Resolve<CostumeChangeService>();
+            _costumeService = GameServices.Room<CostumeChangeService>();
             _allSkins = FastEnum.GetValues<CostumeChangeService.CostumeSkinType>().ToArray();
             _cachedScrollRect = scrollRect;
-            _fontSupplier = ProjectLifetimeScope.Resolve<FontSupplier>();
-            _languageSupplier = ProjectLifetimeScope.Resolve<LanguageSupplier>();
+            _fontSupplier = GameServices.ProjectComponent<FontSupplier>();
+            _languageSupplier = GameServices.Project<LanguageSupplier>();
             SubscribeLanguageChanges();
             _skinTypeTraverse = Traverse.Create(_costumeService).Field("_currentSkinType");
             Plugin.Log.LogInfo($"[Inject] Services resolved (skins: {_allSkins.Length}).");
@@ -220,65 +231,18 @@ internal static class CostumeButtonsInjector
             sectionCSF.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             sectionCSF.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            CreateTmpText(_costumeSection.transform, GetLocalizedText("costume_title"), 18, "costume_title");
-
-            _buttonImages = new Dictionary<CostumeChangeService.CostumeSkinType, Image>();
-            foreach (var skin in _allSkins)
-            {
-                var btn = CreateSkinButton(_costumeSection.transform, skin);
-                var capturedSkin = skin;
-                btn.onClick.AddListener(() => OnSkinButtonClicked(capturedSkin));
-            }
-
-            CreateTmpText(_costumeSection.transform, GetLocalizedText("costume_request_title"), 16, "costume_request_title");
-
-            var requestRow = CreateHorizontalRow(_costumeSection.transform, "RequestOptionsRow", 30f);
-            _requestOptionImages = new Dictionary<int, Image>();
-            string[] optionKeys = { "option_once", "option_today", "option_forever" };
-            for (int i = 0; i < 3; i++)
-            {
-                var btn = CreateOptionButton(requestRow, GetLocalizedText(optionKeys[i]), optionKeys[i]);
-                var img = btn.GetComponent<Image>();
-                _requestOptionImages[i] = img;
-                var capturedIndex = i;
-                btn.onClick.AddListener(() => OnRequestOptionClicked(capturedIndex));
-            }
-
-            // ── Hair Section: enum-discovered, today-only (no Once/Forever row) ──
-            InjectHairSection(_costumeSection.transform);
-
-            // ── Limited Decorations Section: one unified toggle per entry ──
-            // Entries come from LimitedDecorationController (hat enum + discovered events),
-            // so future decorations appear automatically with zero code changes.
-            var entries = LimitedDecorationController.GetAllEntries();
-            if (entries.Count > 0)
-            {
-                CreateTmpText(_costumeSection.transform, GetLocalizedText("limited_title"), 16, "limited_title");
-
-                _decorButtonImages = new Dictionary<string, Image>();
-                foreach (var entry in entries)
-                {
-                    // Display name: localized if known, otherwise the internal id (enum name)
-                    var key = "limited_decor_" + entry.Key;
-                    var displayName = GetLocalizedTextOrFallback(key, entry.Key);
-                    var btn = CreateOptionButton(_costumeSection.transform, displayName, key);
-                    _decorButtonImages[entry.Key] = btn.GetComponent<Image>();
-                    var capturedKey = entry.Key;
-                    btn.onClick.AddListener(() => OnDecorButtonClicked(capturedKey));
-                }
-                UpdateDecorHighlights();
-
-                CreateTmpText(_costumeSection.transform, GetLocalizedText("limited_hint"), 12, "limited_hint");
-            }
-            else
-            {
-                Plugin.Log.LogWarning("[Inject] No limited decorations found; skipping limited decor section.");
-            }
+            // Each section is built independently: a failure in one feature (for
+            // example a future game update changing that feature's API) must not
+            // hide the other sections.
+            BuildSection("costume", () => BuildCostumeSection(_costumeSection.transform));
+            BuildSection("request options", () => BuildRequestSection(_costumeSection.transform));
+            BuildSection("hair", () => InjectHairSection(_costumeSection.transform));
+            BuildSection("limited decorations", () => BuildLimitedDecorSection(_costumeSection.transform));
 
             _costumeSection.SetActive(false);
 
             Plugin.Log.LogInfo(
-                $"[Inject] Complete: skins={_buttonImages.Count}, options={_requestOptionImages.Count}, " +
+                $"[Inject] Complete: skins={(_buttonImages?.Count ?? 0)}, options={(_requestOptionImages?.Count ?? 0)}, " +
                 $"hair={(_hairButtonImages?.Count ?? 0)}, decor={(_decorButtonImages?.Count ?? 0)}, " +
                 $"section='{_costumeSection.name}' (inactive until panel opens).");
         }
@@ -292,6 +256,92 @@ internal static class CostumeButtonsInjector
             _injected = false;
             Plugin.Log.LogError($"[Inject] FAILED: {ex}");
         }
+    }
+
+    /// <summary>Run one section builder; its failure stays local to that section.</summary>
+    private static void BuildSection(string name, Action build)
+    {
+        try
+        {
+            build();
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.LogError($"[Inject] '{name}' section FAILED (other sections keep working): {ex}");
+        }
+    }
+
+    /// <summary>Run one UI refresh; its failure never blocks the other refreshes.</summary>
+    private static void Safe(string name, Action action)
+    {
+        try
+        {
+            action();
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.LogError($"[UI] {name} failed (other UI parts keep working): {ex}");
+        }
+    }
+
+    private static void BuildCostumeSection(Transform parent)
+    {
+        CreateTmpText(parent, GetLocalizedText("costume_title"), 18, "costume_title");
+
+        _buttonImages = new Dictionary<CostumeChangeService.CostumeSkinType, Image>();
+        foreach (var skin in _allSkins)
+        {
+            var btn = CreateSkinButton(parent, skin);
+            var capturedSkin = skin;
+            btn.onClick.AddListener(() => OnSkinButtonClicked(capturedSkin));
+        }
+    }
+
+    private static void BuildRequestSection(Transform parent)
+    {
+        CreateTmpText(parent, GetLocalizedText("costume_request_title"), 16, "costume_request_title");
+
+        var requestRow = CreateHorizontalRow(parent, "RequestOptionsRow", 30f);
+        _requestOptionImages = new Dictionary<int, Image>();
+        string[] optionKeys = { "option_once", "option_today", "option_forever" };
+        for (int i = 0; i < 3; i++)
+        {
+            var btn = CreateOptionButton(requestRow, GetLocalizedText(optionKeys[i]), optionKeys[i]);
+            var img = btn.GetComponent<Image>();
+            _requestOptionImages[i] = img;
+            var capturedIndex = i;
+            btn.onClick.AddListener(() => OnRequestOptionClicked(capturedIndex));
+        }
+    }
+
+    // Limited Decorations Section: one unified toggle per entry.
+    // Entries come from LimitedDecorationController (hat enum + discovered events),
+    // so future decorations appear automatically with zero code changes.
+    private static void BuildLimitedDecorSection(Transform parent)
+    {
+        var entries = LimitedDecorationController.GetAllEntries();
+        if (entries.Count == 0)
+        {
+            Plugin.Log.LogWarning("[Inject] No limited decorations found; skipping limited decor section.");
+            return;
+        }
+
+        CreateTmpText(parent, GetLocalizedText("limited_title"), 16, "limited_title");
+
+        _decorButtonImages = new Dictionary<string, Image>();
+        foreach (var entry in entries)
+        {
+            // Display name: localized if known, otherwise the internal id (enum name)
+            var key = "limited_decor_" + entry.Key;
+            var displayName = GetLocalizedTextOrFallback(key, entry.Key);
+            var btn = CreateOptionButton(parent, displayName, key);
+            _decorButtonImages[entry.Key] = btn.GetComponent<Image>();
+            var capturedKey = entry.Key;
+            btn.onClick.AddListener(() => OnDecorButtonClicked(capturedKey));
+        }
+        UpdateDecorHighlights();
+
+        CreateTmpText(parent, GetLocalizedText("limited_hint"), 12, "limited_hint");
     }
 
     public static void OnActivate()
@@ -319,11 +369,10 @@ internal static class CostumeButtonsInjector
             // Rebuild section internal layout with proper width
             LayoutRebuilder.ForceRebuildLayoutImmediate(sectionRT);
 
-            UpdateActiveHighlights();
-            RestoreRequestOptionState();
-
-            UpdateHairHighlights();
-            UpdateDecorHighlights();
+            Safe("costume highlights", () => UpdateActiveHighlights());
+            Safe("request option state", RestoreRequestOptionState);
+            Safe("hair highlights", UpdateHairHighlights);
+            Safe("limited decor highlights", UpdateDecorHighlights);
         }
         catch (Exception ex)
         {
@@ -496,7 +545,7 @@ internal static class CostumeButtonsInjector
         {
             if (_languageSupplier == null)
             {
-                _languageSupplier = ProjectLifetimeScope.Resolve<LanguageSupplier>();
+                _languageSupplier = GameServices.Project<LanguageSupplier>();
             }
             return _languageSupplier.Get();
         }
@@ -547,7 +596,7 @@ internal static class CostumeButtonsInjector
         {
             try
             {
-                _fontSupplier = ProjectLifetimeScope.Resolve<FontSupplier>();
+                _fontSupplier = GameServices.ProjectComponent<FontSupplier>();
             }
             catch (Exception ex)
             {
@@ -736,7 +785,7 @@ internal static class CostumeButtonsInjector
     private static void OnHairButtonClicked(string key)
     {
         HairController.Select(key);
-        UpdateHairHighlights();
+        Safe("hair highlights", UpdateHairHighlights);
     }
 
     private static void UpdateHairHighlights()
@@ -765,8 +814,8 @@ internal static class CostumeButtonsInjector
     private static void OnDecorButtonClicked(string key)
     {
         LimitedDecorationController.Toggle(key);
-        UpdateDecorHighlights();
-        UpdateHairHighlights();
+        Safe("limited decor highlights", UpdateDecorHighlights);
+        Safe("hair highlights", UpdateHairHighlights);
     }
 
     private static void UpdateDecorHighlights()

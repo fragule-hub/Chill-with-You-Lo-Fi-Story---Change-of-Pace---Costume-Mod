@@ -4,7 +4,6 @@ using System.Reflection;
 using Bulbul;
 using FastEnumUtility;
 using HarmonyLib;
-using NestopiSystem.DIContainers;
 using UnityEngine;
 
 namespace ChangeOfPaceCostume;
@@ -27,6 +26,9 @@ internal sealed class HairEntry
 /// Persistence is always "today" (HairLotteryData, 6:00 day boundary).
 /// Official APIs first; unknown future HairStyle values fall back to a
 /// HairSource public list whose name matches the enum.
+///
+/// Headwear-related policy (unlock / special style bookkeeping) lives in
+/// <see cref="HairLockPolicy"/> so this class only deals with hair itself.
 /// </summary>
 internal static class HairController
 {
@@ -62,7 +64,10 @@ internal static class HairController
         return _entries;
     }
 
-    /// <summary>UI click: always save as today; skip visual while a hair-locking hat is on.</summary>
+    /// <summary>
+    /// UI click. Follows the game default: while a headwear (or the finale) locks
+    /// hair, the click is ignored instead of overwriting the saved hairstyle.
+    /// </summary>
     public static void Select(string key)
     {
         var entry = FindEntry(key);
@@ -72,14 +77,13 @@ internal static class HairController
             return;
         }
 
-        SaveToday(entry);
-
         if (IsSuppressedByHeadwear())
         {
-            Plugin.Log.LogInfo($"[Hair] Saved '{key}' for today; visual deferred (hat lock).");
+            Plugin.Log.LogInfo($"[Hair] Ignored '{key}' (hairstyle is locked right now).");
             return;
         }
 
+        SaveToday(entry);
         ApplyVisual(entry);
         Plugin.Log.LogInfo($"[Hair] Applied '{key}' (today).");
     }
@@ -97,8 +101,7 @@ internal static class HairController
 
             var data = GetSavedData();
             if (data == null) return;
-            EnsureService();
-            _service.ChangeHairWithoutSave(data);
+            ApplyHairVisual(data.Kind, data.PinKind);
         }
         catch (Exception ex)
         {
@@ -119,9 +122,72 @@ internal static class HairController
         return GetWantedKey();
     }
 
-    public static bool IsSuppressedByHeadwear()
+    public static bool IsSuppressedByHeadwear() => IsHairLocked();
+
+    /// <summary>Drops cached services (scene rebuild).</summary>
+    internal static void Invalidate()
     {
-        return LimitedDecorationController.HasHairLockingHatEnabled() || IsHairChangeLocked();
+        _service = null;
+        _lockedTraverse = null;
+    }
+
+    /// <summary>
+    /// The game's actual lock flag first: a mod-equipped plain hat is unlocked on
+    /// purpose, while a story-driven / special hat keeps the vanilla lock.
+    /// CurrentHatType is only a conservative fallback if the field disappears.
+    /// </summary>
+    internal static bool IsHairLocked()
+    {
+        try
+        {
+            EnsureService();
+            if (_lockedTraverse != null) return _lockedTraverse.GetValue<bool>();
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.LogWarning($"[Hair] Lock flag unavailable, using CurrentHatType: {ex.Message}");
+        }
+
+        try
+        {
+            var hat = GameServices.RoomComponent<HatChangeService>();
+            if (hat != null && hat.CurrentHatType != null)
+            {
+                return hat.CurrentHatType.CurrentValue != HatChangeService.HatType.None;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+        return false;
+    }
+
+    // ── small internal surface used by HairLockPolicy ──
+
+    internal static HairChangeData GetSavedHair() => GetSavedData();
+
+    internal static void PersistHair(HairStyle kind, HairPinKind pin)
+    {
+        var entry = FindEntry(KeyOf(kind, pin));
+        if (entry != null) SaveToday(entry);
+    }
+
+    internal static void ApplyHairVisual(HairStyle kind, HairPinKind pin)
+    {
+        EnsureService();
+        _service.ChangeHairWithoutSave(new HairChangeData
+        {
+            Kind = kind,
+            PinKind = pin,
+            Changed = DateTime.Now,
+        });
+    }
+
+    internal static void UnlockHair()
+    {
+        EnsureService();
+        _service.SetHairChangeLocked(false);
     }
 
     /// <summary>
@@ -135,17 +201,8 @@ internal static class HairController
         return Day(latestChangeDate) < Day(now);
     }
 
-    public static bool IsEpisode32()
-    {
-        try
-        {
-            return SaveDataManager.Instance.ScenarioProgressData.NextEpisodeNumber == 32f;
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    /// <summary>True while the finale window makes the mod defer to the game.</summary>
+    public static bool IsFinalePending() => GameState.IsFinalePending();
 
     private static HairEntry MakeEntry(HairStyle style, HairPinKind pin)
     {
@@ -204,10 +261,9 @@ internal static class HairController
 
     private static void ApplyVisual(HairEntry entry)
     {
-        EnsureService();
         try
         {
-            _service.ChangeHairWithoutSave(ToChangeData(entry));
+            ApplyHairVisual(entry.Style, entry.PinKind);
             return;
         }
         catch (Exception ex)
@@ -226,20 +282,28 @@ internal static class HairController
     /// </summary>
     private static bool TryApplyViaHairSource(HairEntry entry)
     {
-        HairSource source;
-        try
-        {
-            source = RoomLifetimeScope.Resolve<HairSource>();
-        }
-        catch (Exception ex)
-        {
-            Plugin.Log.LogWarning($"[Hair] Resolve HairSource failed: {ex.Message}");
-            return false;
-        }
+        var source = GameServices.RoomComponent<HairSource>();
         if (source == null) return false;
 
         try
         {
+            // Hairpin variants are data-driven: activate the matching pin GameObject
+            // even when a future HairPinKind is unknown to the service switch.
+            if (entry.Style == HairStyle.HairPin && source.HairPins != null)
+            {
+                bool matchedPin = false;
+                SetActiveList(source.Normal, false);
+                SetActiveList(source.HairPinStyles, true);
+                foreach (var kv in source.HairPins)
+                {
+                    if (kv.Value == null) continue;
+                    bool isMatch = kv.Key == entry.PinKind;
+                    kv.Value.SetActive(isMatch);
+                    matchedPin |= isMatch;
+                }
+                if (matchedPin) return true;
+            }
+
             SetActiveList(source.Normal, false);
             SetActiveList(source.HairPinStyles, false);
             if (source.HairPins != null)
@@ -289,20 +353,9 @@ internal static class HairController
     private static void EnsureService()
     {
         if (_service != null) return;
-        _service = RoomLifetimeScope.Resolve<ChangeHairService>();
+        _service = GameServices.Room<ChangeHairService>();
+        if (_service == null)
+            throw new InvalidOperationException("ChangeHairService is not available.");
         _lockedTraverse = Traverse.Create(_service).Field("isHairChangeLocked");
-    }
-
-    private static bool IsHairChangeLocked()
-    {
-        try
-        {
-            EnsureService();
-            return _lockedTraverse != null && _lockedTraverse.GetValue<bool>();
-        }
-        catch
-        {
-            return false;
-        }
     }
 }
